@@ -30,5 +30,38 @@
  *   // => "Dil ka Kya Kare"
  */
 export function fixBollywoodTitle(title) {
-  // Your code here
+
+  //return if title is not a string
+  if(typeof title !== "string") return "";
+
+  //trim the title
+  title = title.trim();
+
+  //return if title is empty
+  if(title === "") return "";
+
+  //take all the strings inside an array
+  let listTitleWords = title.split(" ")
+
+  //remove all the empty strings from word's array
+  let filteredWords =  listTitleWords.filter(element => element !== "")
+
+  let formatedWords = filteredWords.map(e => {
+    //for below words convert it to lowercase
+    if(e==="ka"|| e==="ki" ||  e==="ke" || e==="se" ||  e==="aur" || e==="ya" ||  e==="the" || e==="of" || e==="in" || e==="a" || e==="an"){
+      return e.toLowerCase()
+    }
+    //for rest make first letter capital and rest lower
+    else{
+      return e.charAt(0).toUpperCase() + e.slice(1).toLowerCase()
+    }
+  })
+
+  //make a string separated by single space
+  formatedWords = formatedWords.join(" ")
+
+  //make first letter capital of whole title and return it
+  return formatedWords.charAt(0).toUpperCase() + formatedWords.slice(1);
+
+
 }

@@ -46,5 +46,89 @@
  *   // grandTotal: 1000 + 0 + 50 - 150 = 900
  */
 export function buildZomatoOrder(cart, coupon) {
-  // Your code here
+
+  //if not array or empty array then return null
+  if (!Array.isArray(cart) || cart.length === 0) return null;
+
+  //convert coupon to lowercase
+  const code = typeof coupon === "string" ? coupon.toLowerCase() : null;
+
+  
+  const items = cart
+    //filter out items with valid quantity
+    .filter(item => item.qty > 0)
+    //process those items
+    .map(item => {
+      //set base price
+      const basePrice = item.price || 0;
+      //calculate addon cost
+      const addonTotal = (item.addons || []).reduce((sum, addon) => {
+        const [_, price] = addon.split(":");
+        return sum + (parseFloat(price) || 0);
+      }, 0);
+      //total cost
+      const itemTotal = (basePrice + addonTotal) * item.qty;
+
+      return {
+        name: item.name,
+        qty: item.qty,
+        basePrice,
+        addonTotal,
+        itemTotal
+      };
+    });
+
+  //if no valid items then return null
+  if (items.length === 0) return null;
+
+  //calculate subtotal
+  const subtotal = items.reduce((sum, item) => sum + item.itemTotal, 0);
+
+
+  //calculate delivery fee
+  let deliveryFee = 0;
+  if (subtotal < 500) deliveryFee = 30;
+  else if (subtotal < 1000) deliveryFee = 15;
+
+
+  //calculate gst
+  const gst = parseFloat((subtotal * 0.05).toFixed(2));
+
+  
+  let discount = 0;
+
+  //check if invalid code or not
+  const validCode = code || "";
+
+  //calculate discount
+  switch (validCode) {
+    case "first50":
+      discount = Math.min(subtotal * 0.5, 150);
+      break;
+  
+    case "flat100":
+      discount = 100;
+      break;
+  
+    //in this coupon discount will be equal to delivery fee and delivery fee will be none
+    case "freeship":
+      discount = deliveryFee;
+      deliveryFee = 0;
+      break;
+  }
+
+
+  // grandTotal: subtotal + deliveryFee + gst - discount (minimum 0, use Math.max)
+  let grandTotal = subtotal + deliveryFee + gst - discount;
+  grandTotal = Math.max(0, parseFloat(grandTotal.toFixed(2)));
+
+  return {
+    items,
+    subtotal,
+    deliveryFee,
+    gst,
+    discount,
+    grandTotal
+  };
 }
+

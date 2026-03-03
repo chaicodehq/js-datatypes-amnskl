@@ -39,5 +39,54 @@
  *   //      text: "I love this song", wordCount: 4, sentiment: "love" }
  */
 export function parseWhatsAppMessage(message) {
-  // Your code here
-}
+
+    if (typeof message !== 'string') return null;
+    if (!message.includes(' - ') || !message.includes(': ')) return null;
+
+    let obj = {
+        date: '',
+        time: '',
+        sender: '',
+        text: '',
+        wordCount: 0,
+        sentiment: '',
+    };
+
+    //"01/12/2024, 09:15 - Priya: I love this song"
+    //"01/12/2024" "09:15 - Priya: I love this song"
+    let array = message.split(',');
+    obj.date = array[0].trim();
+
+    //"09:15 - Priya: I love this song"
+    //"09:15" "Priya: I love this song"
+    let array1 = array[1].split(' - ');
+    obj.time = array1[0].trim();
+
+    //"Priya: I love this song"
+    //"Priya" "I love this song"
+    let array2 = array1[1].split(': ');
+    obj.sender = array2[0].trim();
+
+    //"I love this song"
+    let msg = array2[1].trim(); 
+    obj.text = msg;
+
+    // WORD COUNT
+    let words = msg.split(' ').filter(w => w.trim() !== '');
+    obj.wordCount = words.length;
+
+    // SENTIMENT CHECK (case-insensitive)
+    let lower = msg.toLowerCase();
+
+    if (msg.includes("😂") || msg.includes(":)") || lower.includes("haha")) {
+        obj.sentiment = "funny";
+    } else if (msg.includes("❤") || lower.includes("love") || lower.includes("pyaar")) {
+        obj.sentiment = "love";
+    } else {
+        obj.sentiment = "neutral";
+    }
+
+    return obj;
+
+  }
+

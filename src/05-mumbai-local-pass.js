@@ -42,5 +42,42 @@
  *   // => "INVALID PASS"
  */
 export function generateLocalPass(passenger) {
-  // Your code here
+  
+  //return invalid if object not found
+  if(! passenger) return "INVALID PASS";
+
+  const {name, from, to, classType} = passenger;
+
+  //return invalid if all the keys not found
+  if(!name || !from || !to || !classType) return "INVALID PASS"
+
+  //return invalid if any string is empty
+  if(name.trim() === "" || from.trim() === "" || to.trim() === "" || classType.trim() === "" ) return "INVALID PASS"
+
+  //return invalid if classtype is not first or second
+  if(classType.toLowerCase() !== "first" && classType.toLowerCase() !== "second") return "INVALID PASS";
+
+  //generate passID
+  //classType ka first char uppercase + from ke pehle 3 letters uppercase + to ke pehle 3 letters uppercase
+  const passID = classType.charAt(0).toUpperCase() + from.slice(0,3).toUpperCase() + to.slice(0,3).toUpperCase();
+
+  //   - Output format:
+  //     Line 1: "MUMBAI LOCAL PASS"
+  let formattedString = "MUMBAI LOCAL PASS"
+  //     Line 2: "---"
+  formattedString = formattedString + "\n---"
+  //     Line 3: "Name: <NAME IN UPPERCASE>"
+  formattedString = formattedString + "\nName: " + name.toUpperCase();
+  //     Line 4: "From: <From in Title Case>"
+  formattedString = formattedString + "\nFrom: " + from.charAt(0).toUpperCase() + from.slice(1).toLowerCase();
+  //     Line 5: "To: <To in Title Case>"
+  formattedString = formattedString + "\nTo: " + to.charAt(0).toUpperCase() + to.slice(1).toLowerCase();
+  //     Line 6: "Class: <FIRST or SECOND>"
+  formattedString = formattedString + "\nClass: " + classType.toUpperCase();
+  //     Line 7: "Pass ID: <PASSID>"
+  formattedString = formattedString + "\nPass ID: "+passID.toUpperCase();
+
+  return formattedString;
+
+
 }

@@ -62,5 +62,73 @@
  *   // => { isValid: false, errors: { name: "...", email: "...", ... } }
  */
 export function validateForm(formData) {
-  // Your code here
+  
+  // { name, email, phone, age, pincode, state, agreeTerms }
+  const { name, email, phone, age, pincode, state, agreeTerms } = formData;
+
+  const error = {errors:{}, isValid : true}
+
+  //  *   1. name: must be a non-empty trimmed string, min 2 chars, max 50 chars
+  //  *      Error: "Name must be 2-50 characters"
+  if (!((name).trim().length >= 2 && (name).trim().length <= 50) ) {
+    error.errors.name = "Name must be 2-50 characters";
+    error.isValid = false;
+  }
+
+//  *   2. email: must be a string containing exactly one "@" and at least one "."
+//  *      after the "@". Use indexOf(), lastIndexOf(), includes().
+//  *      Error: "Invalid email format"
+  const lastPositionOfAt = (email || "").lastIndexOf('@');
+  const firstPositionOfAt = (email || "").indexOf('@');
+  const lastPositionOfDot = (email || "").lastIndexOf('.');
+
+  if(!(lastPositionOfAt > 0 && lastPositionOfDot > 0 && lastPositionOfDot > lastPositionOfAt) || firstPositionOfAt !== lastPositionOfAt){
+    error.errors.email = "Invalid email format";
+    error.isValid = false;
+  }
+
+//  *   3. phone: must be a string of exactly 10 digits, starting with 6, 7, 8, or 9
+//  *      (Indian mobile numbers). Check each char is a digit.
+//  *      Error: "Invalid Indian phone number"
+  if(phone.length !== 10 || isNaN(phone) || !(['6', '7', '8', '9'].some(element => phone.startsWith(element)))){
+    error.errors.phone = "Invalid Indian phone number";
+    error.isValid = false;
+  }
+  
+  //  *   4. age: must be a number between 16 and 100 inclusive, and an integer.
+  //  *      JUGAAD: Agar string mein number diya hai (e.g., "22"), toh parseInt()
+  //  *      se convert karo. Agar convert nahi ho paya (isNaN), toh error.
+  //  *      Error: "Age must be an integer between 16 and 100"
+  if(isNaN(age) || !Number.isInteger(parseFloat(age)) || parseInt(age) < 16 || parseInt(age) > 100 ){
+    error.errors.age = "Age must be an integer between 16 and 100";
+    error.isValid = false;
+  }
+
+//  *   5. pincode: must be a string of exactly 6 digits, NOT starting with "0"
+//  *      Error: "Invalid Indian pincode"
+  if(isNaN(pincode) || pincode.length !== 6 || pincode.startsWith('0')){
+    error.errors.pincode = "Invalid Indian pincode";
+    error.isValid = false;
+  }
+
+//  *   6. state: Use optional chaining (?.) and nullish coalescing (??) -
+//  *      if state is null/undefined, treat as "". Must be a non-empty string.
+//  *      Error: "State is required"
+  if((state ?? "").trim() === ""){
+    error.errors.state = "State is required";
+    error.isValid = false;
+  }
+
+//  *   7. agreeTerms: must be truthy (Boolean(agreeTerms) === true).
+//  *      Falsy values: 0, "", null, undefined, NaN, false
+//  *      Error: "Must agree to terms"
+  if(!(agreeTerms || false)){
+    error.errors.agreeTerms = "Must agree to terms";
+    error.isValid = false;
+  }
+
+  // if(!error?.isValid) error.isValid = true;
+
+  return error;
+
 }
